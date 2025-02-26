@@ -35,9 +35,7 @@ export const todos = createSlice({
         return e;
       });
     },
-    search: (state, action) => {
-      
-    },
+    search: (state, action) => {},
   },
 });
 
