@@ -53,23 +53,39 @@ const App = () => {
     },
   ];
 
+  let [addMod, setAddMod] = useState(false);
+  let addModCheck = useRef();
+  let [addInpN, setAddInpN] = useState("");
+  let [addInpD, setAddInpD] = useState("");
+
+  function openAddMod() {
+    setAddMod(true);
+  }
+
   function addData(event) {
     event.preventDefault();
-    if (event.target["addInp"].value.trim() !== "") {
+    if (
+      event.target["addInpN"].value.trim() !== "" &&
+      event.target["addInpD"].value.trim() !== ""
+    ) {
       dispatch(
         add({
           id: new Date().getTime(),
-          name: event.target["addInp"].value,
+          name: event.target["addInpN"].value,
+          des: event.target["addInpD"].value,
           complete: false,
         })
       );
-      setAddInp("");
+
+      setAddMod(false);
+      event.target["addInpN"].value = "";
+      event.target["addInpD"].value = "";
     } else {
       alert("Please enter a valid todo");
     }
   }
 
-  let [addInp, setAddInp] = useState("");
+  let [searchInp, setSearchInp] = useState("");
 
   function openDelMod(id) {
     setDelMod(true);
@@ -84,7 +100,8 @@ const App = () => {
   }
 
   let [editMod, setEditMod] = useState(false);
-  let [editInp, setEditInp] = useState("");
+  let [editInpN, setEditInpN] = useState("");
+  let [editInpD, setEditInpD] = useState("");
   let [editIdx, setEditIdx] = useState(null);
   let editModCheck = useRef();
 
@@ -99,49 +116,49 @@ const App = () => {
   let editData = function (event) {
     event.preventDefault();
 
-    if (editInp.trim() !== "") {
-      console.log(dispatch(edit({ id: editIdx, name: editInp })));
+    if (editInpN.trim() !== "" && editInpD.trim() !== "") {
+      dispatch(edit({ id: editIdx, name: editInpN, des: editInpD }));
 
       setEditMod(false);
       setEditIdx(null);
-      setEditInp("");
+      setEditInpN("");
+      setEditInpD("");
     } else {
       alert("Please enter a valid todo");
     }
   };
 
   let [filter, setFilter] = useState("");
-  // useEffect(() => {
-  //   console.log(filter);
-  // }, [filter]);
+
   return (
     <div>
-      <div className="header p-2 flex justify-between">
-        <form
-          onSubmit={addData}
-          className="flex justify-between gap-2 items-center"
-        >
+      <div className="header gap-2 items-center p-2 flex justify-between">
+        <div>
           <input
-            id="addInp"
-            type="text"
-            value={addInp}
-            onChange={(e) => setAddInp(e.target.value)}
+            className="border p-[5px_8px] max-w-full outline-[#9a9adf] rounded-md"
+            type="search"
+            value={searchInp}
+            onChange={(e) => setSearchInp(e.target.value)}
             placeholder="Enter your todo"
-            className="border p-[5px_12px] outline-[#9a9adf] rounded-md"
           />
-          <button className="border p-[5px_10px] bg-blue-500 text-[#fff] font-medium rounded-md">
+        </div>
+        <div className="flex gap-2 items-end max-md:flex-col-reverse">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="border max-w-full outline-none pl-1 p-[5px_12px]"
+          >
+            <option value="">All</option>
+            <option value="complete">Complete</option>
+            <option value="incomplete">Incomplete</option>
+          </select>
+          <button
+            onClick={() => openAddMod()}
+            className="border  p-[5px_10px] bg-blue-500 text-[#fff] font-medium rounded-md"
+          >
             add
           </button>
-        </form>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="border outline-none pl-1 p-[5px_12px]"
-        >
-          <option value="">All</option>
-          <option value="complete">Complete</option>
-          <option value="incomplete">Incomplete</option>
-        </select>
+        </div>
       </div>
       {optMod ? (
         <div
@@ -154,7 +171,72 @@ const App = () => {
           className="w-full h-full bg-transparent absolute top-0 left-0 z-30"
         ></div>
       ) : null}
+      {addMod ? (
+        <div
+          ref={addModCheck}
+          onClick={(e) => {
+            if (e.target == addModCheck.current) {
+              setAddMod(false);
+              setAddInpD("");
+              setAddInpN("");
+            }
+          }}
+          className="w-full bg-[#3e3b3b77] h-full flex items-center justify-center absolute top-0 left-0 z-50"
+        >
+          <div className="w-[500px] max-w-full m-2 bg-[#fff]">
+            <div className="pt-1 p-[20px]">
+              <div className="flex justify-end p-2">
+                <button
+                  type="reset"
+                  onClick={() => setAddMod(false)}
+                  className="font-bold flex justify-center rounded-md items-center border p-1"
+                >
+                  <i className="bx bx-x"></i>
+                </button>
+              </div>
+              <form onSubmit={addData} className="flex flex-col gap-2">
+                <div className="flex max-md:flex-col justify-between gap-2">
+                  <input
+                    type="text"
+                    id="addInpN"
+                    value={addInpN}
+                    onChange={(e) => setAddInpN(e.target.value)}
+                    placeholder="Enter the name"
+                    className="outline-blue border p-[5px_8px] w-full outline-[#9a9adf] rounded-md"
+                  />
+                  <input
+                    id="addInpD"
+                    placeholder="Enter the description"
+                    type="text"
+                    value={addInpD}
+                    onChange={(e) => setAddInpD(e.target.value)}
+                    className="outline-blue border p-[5px_8px] w-full outline-[#9a9adf] rounded-md"
+                  />
+                </div>
 
+                <div className="flex pt-1 text-[#fff] justify-between gap-3">
+                  <button className="border-b-[4px] active:border-0 border-b-[#191d8b] w-full font-bold p-[6px_12px] rounded-[10px] bg-blue-500">
+                    Add
+                  </button>
+                  <button
+                    type="reset"
+                    className="border-b-[4px] active:border-0 border-[#8e661c] w-full bg-orange-400 font-bold p-[6px_12px] rounded-[10px]"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="reset"
+                    onClick={() => setAddMod(false)}
+                    className="border-b-[4px] active:border-0 border-[#942323] w-full bg-[red] font-bold p-[6px_12px] rounded-[10px]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {delMod ? (
         <div
           onClick={(e) => {
@@ -200,33 +282,64 @@ const App = () => {
             if (e.target == editModCheck.current) {
               setEditMod(false);
               setEditIdx(null);
-              setEditInp("");
+              setEditInpN("");
+              setEditInpD("");
             }
           }}
           ref={editModCheck}
           className="w-full z-[60]  flex justify-center bg-[#3e3b3b77] items-center h-full absolute top-0 left-0"
         >
-          <div className="w-[40%] items-center flex justify-center  h-[30%] bg-[#fff] ">
-            <form
-              className="flex justify-center items-center gap-2"
-              onSubmit={editData}
-            >
-              <input
-                id="editInp"
-                value={editInp}
-                onChange={(e) => setEditInp(e.target.value)}
-                type="text"
-                required
-                autoFocus
-                className="border rounded-md outline-blue-500 p-[5px_12px]"
-              />
-              <button
-                type="submit"
-                className="bg-blue-600 p-[5px_12px] font-medium text-[#fff] rounded-md"
-              >
-                Edit
-              </button>
-            </form>
+          <div className="w-[500px] max-w-full m-2 bg-[#fff]">
+            <div className="pt-1 p-[20px]">
+              <div className="flex justify-end p-2">
+                <button
+                  type="reset"
+                  onClick={() => setEditMod(false)}
+                  className="font-bold flex justify-center rounded-md items-center border p-1"
+                >
+                  <i className="bx bx-x"></i>
+                </button>
+              </div>
+              <form onSubmit={editData} className="flex flex-col gap-2">
+                <div className="flex max-md:flex-col justify-between gap-2">
+                  <input
+                    type="text"
+                    id="editInpN"
+                    value={editInpN}
+                    onChange={(e) => setEditInpN(e.target.value)}
+                    placeholder="Enter the name"
+                    className="outline-blue border p-[5px_8px] w-full outline-[#9a9adf] rounded-md"
+                  />
+                  <input
+                    id="addInpD"
+                    placeholder="Enter the description"
+                    type="text"
+                    value={editInpD}
+                    onChange={(e) => setEditInpD(e.target.value)}
+                    className="outline-blue border p-[5px_8px] w-full outline-[#9a9adf] rounded-md"
+                  />
+                </div>
+
+                <div className="flex pt-1 text-[#fff] justify-between gap-3">
+                  <button className="border-b-[4px] active:border-0 border-b-[#191d8b] w-full font-bold p-[6px_12px] rounded-[10px] bg-blue-500">
+                    Add
+                  </button>
+                  <button
+                    type="reset"
+                    className="border-b-[4px] active:border-0 border-[#8e661c] w-full bg-orange-400 font-bold p-[6px_12px] rounded-[10px]"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="reset"
+                    onClick={() => setEditMod(false)}
+                    className="border-b-[4px] active:border-0 border-[#942323] w-full bg-[red] font-bold p-[6px_12px] rounded-[10px]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       ) : null}
@@ -234,7 +347,10 @@ const App = () => {
       <div>
         {todos
           .filter((e) => {
-            return e.name.includes(addInp.trim());
+            return (
+              e.name.toLowerCase().includes(searchInp.toLowerCase().trim()) ||
+              e.des.toLowerCase().includes(searchInp.toLowerCase().trim())
+            );
           })
           .filter((e) => {
             if (filter == "complete") {
@@ -251,9 +367,9 @@ const App = () => {
                 key={e.id}
                 className="flex bg-blue-400 border-b relative items-center justify-between p-2"
               >
-                <div className="flex flex-col p-2">
+                <div className="flex flex-col p-1">
                   <div
-                    className="font-medium text-[16px]"
+                    className="font-bold text-[16px]"
                     style={
                       e.complete
                         ? { textDecoration: "line-through" }
@@ -262,6 +378,7 @@ const App = () => {
                   >
                     {e.name}
                   </div>
+                  <div className="font-bold text-[16px]">{e.des}</div>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <button

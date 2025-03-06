@@ -4,9 +4,9 @@ export const todos = createSlice({
   name: "counter",
   initialState: {
     value: [
-      { id: 1, name: "todo1", complete: true },
-      { id: 2, name: "todo2", complete: false },
-      { id: 3, name: "todo3", complete: true },
+      { id: 1, name: "todo1", des: "description 1", complete: true },
+      { id: 2, name: "todo2", des: "description 2", complete: false },
+      { id: 3, name: "todo3", des: "description 3", complete: true },
     ],
   },
   reducers: {
@@ -35,7 +35,6 @@ export const todos = createSlice({
         return e;
       });
     },
-    search: (state, action) => {},
   },
 });
 
