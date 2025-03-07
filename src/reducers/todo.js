@@ -27,10 +27,11 @@ export const todos = createSlice({
       });
     },
     edit: (state, action) => {
-      const { name, id } = action.payload;
+      const { name, id, des } = action.payload;
       state.value = state.value.map((e) => {
         if (e.id == id) {
           e.name = name;
+          e.des = des;
         }
         return e;
       });

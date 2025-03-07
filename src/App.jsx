@@ -63,11 +63,11 @@ const App = () => {
   }
 
   function addData(event) {
-    event.preventDefault();
     if (
       event.target["addInpN"].value.trim() !== "" &&
       event.target["addInpD"].value.trim() !== ""
     ) {
+      event.preventDefault();
       dispatch(
         add({
           id: new Date().getTime(),
@@ -106,7 +106,8 @@ const App = () => {
   let editModCheck = useRef();
 
   function openEditMod(e) {
-    setEditInp(e.name);
+    setEditInpN(e.name);
+    setEditInpD(e.des);
 
     setEditMod(true);
     setEditIdx(e.id);
@@ -117,7 +118,9 @@ const App = () => {
     event.preventDefault();
 
     if (editInpN.trim() !== "" && editInpD.trim() !== "") {
-      dispatch(edit({ id: editIdx, name: editInpN, des: editInpD }));
+      console.log(
+        dispatch(edit({ id: editIdx, name: editInpN, des: editInpD }))
+      );
 
       setEditMod(false);
       setEditIdx(null);
@@ -132,21 +135,19 @@ const App = () => {
 
   return (
     <div>
-      <div className="header gap-2 items-center p-2 flex justify-between">
-        <div>
-          <input
-            className="border p-[5px_8px] max-w-full outline-[#9a9adf] rounded-md"
-            type="search"
-            value={searchInp}
-            onChange={(e) => setSearchInp(e.target.value)}
-            placeholder="Enter your todo"
-          />
-        </div>
-        <div className="flex gap-2 items-end max-md:flex-col-reverse">
+      <div className="header gap-2 max-sm:flex-col items-center p-2 flex justify-between">
+        <input
+          className="border p-[5px_8px] max-sm:w-full outline-[#9a9adf] rounded-md"
+          type="search"
+          value={searchInp}
+          onChange={(e) => setSearchInp(e.target.value)}
+          placeholder="Enter your todo"
+        />
+        <div className="flex max-sm:w-full gap-2 items-end ">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border max-w-full outline-none pl-1 p-[5px_12px]"
+            className="border max-sm:w-[70%] outline-none pl-1 p-[5px_12px]"
           >
             <option value="">All</option>
             <option value="complete">Complete</option>
@@ -154,7 +155,7 @@ const App = () => {
           </select>
           <button
             onClick={() => openAddMod()}
-            className="border  p-[5px_10px] bg-blue-500 text-[#fff] font-medium rounded-md"
+            className="border max-sm:w-[30%] p-[5px_10px] bg-blue-500 text-[#fff] font-medium rounded-md"
           >
             add
           </button>
@@ -187,8 +188,11 @@ const App = () => {
             <div className="pt-1 p-[20px]">
               <div className="flex justify-end p-2">
                 <button
-                  type="reset"
-                  onClick={() => setAddMod(false)}
+                  onClick={() => {
+                    setAddMod(false);
+                    setAddInpD("");
+                    setAddInpN("");
+                  }}
                   className="font-bold flex justify-center rounded-md items-center border p-1"
                 >
                   <i className="bx bx-x"></i>
@@ -199,6 +203,7 @@ const App = () => {
                   <input
                     type="text"
                     id="addInpN"
+                    autoFocus
                     value={addInpN}
                     onChange={(e) => setAddInpN(e.target.value)}
                     placeholder="Enter the name"
@@ -219,14 +224,22 @@ const App = () => {
                     Add
                   </button>
                   <button
-                    type="reset"
+                    type="button"
+                    onClick={() => {
+                      setAddInpD("");
+                      setAddInpN("");
+                    }}
                     className="border-b-[4px] active:border-0 border-[#8e661c] w-full bg-orange-400 font-bold p-[6px_12px] rounded-[10px]"
                   >
                     Reset
                   </button>
                   <button
-                    type="reset"
-                    onClick={() => setAddMod(false)}
+                    type="button"
+                    onClick={() => {
+                      setAddMod(false);
+                      setAddInpD("");
+                      setAddInpN("");
+                    }}
                     className="border-b-[4px] active:border-0 border-[#942323] w-full bg-[red] font-bold p-[6px_12px] rounded-[10px]"
                   >
                     Cancel
@@ -305,6 +318,7 @@ const App = () => {
                   <input
                     type="text"
                     id="editInpN"
+                    autoFocus
                     value={editInpN}
                     onChange={(e) => setEditInpN(e.target.value)}
                     placeholder="Enter the name"
@@ -325,14 +339,22 @@ const App = () => {
                     Add
                   </button>
                   <button
-                    type="reset"
+                    type="button"
+                    onClick={() => {
+                      setEditInpD("");
+                      setEditInpN("");
+                    }}
                     className="border-b-[4px] active:border-0 border-[#8e661c] w-full bg-orange-400 font-bold p-[6px_12px] rounded-[10px]"
                   >
                     Reset
                   </button>
                   <button
-                    type="reset"
-                    onClick={() => setEditMod(false)}
+                    type="button"
+                    onClick={() => {
+                      setEditMod(false);
+                      setEditInpD("");
+                      setEditInpN("");
+                    }}
                     className="border-b-[4px] active:border-0 border-[#942323] w-full bg-[red] font-bold p-[6px_12px] rounded-[10px]"
                   >
                     Cancel
@@ -378,7 +400,16 @@ const App = () => {
                   >
                     {e.name}
                   </div>
-                  <div className="font-bold text-[16px]">{e.des}</div>
+                  <div
+                    style={
+                      e.complete
+                        ? { textDecoration: "line-through" }
+                        : { textDecoration: "none" }
+                    }
+                    className="font-bold text-[16px]"
+                  >
+                    {e.des}
+                  </div>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <button
