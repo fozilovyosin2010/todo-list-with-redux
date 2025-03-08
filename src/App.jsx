@@ -400,16 +400,7 @@ const App = () => {
                   >
                     {e.name}
                   </div>
-                  <div
-                    style={
-                      e.complete
-                        ? { textDecoration: "line-through" }
-                        : { textDecoration: "none" }
-                    }
-                    className="font-bold text-[16px]"
-                  >
-                    {e.des}
-                  </div>
+                  <div className="font-bold text-[16px]">{e.des}</div>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <button
